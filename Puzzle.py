@@ -1,5 +1,6 @@
 import pygame
 import sys
+import time
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -30,42 +31,23 @@ class Puzzle:
         self.combination = combination
         self.solution = solution_combination
 
+        moves = ["DOWN", "LEFT", "UP", "LEFT", "UP", "RIGHT", "DOWN", "DOWN"]
+        move_index = 0
 
-        self.draw()
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                #if event == movement -> draw movement
 
-
-    def draw(self):
-        img = []
-        for i in range(self.dimension[0]*self.dimension[1]):
-            if self.combination[i] != 0:
-                img.append(pygame.image.load(images_table[self.combination[i]]))
-            else:
-                img.append(None)
-
-        displacement_row = 5
-        for row in range(self.dimension[0]):
-            displacement_col = 5
-            for column in range(self.dimension[1]):
-                try:
-                    self.window.blit(img[column+row*3], (column*40 + displacement_col, row*40 + displacement_row))
-                except Exception:
-                    continue
-                displacement_col += 5
-            displacement_row += 5
-
-        pygame.display.flip()
+            if move_index < len(moves):
+                self.draw_movement(moves[move_index])
+                move_index += 1
 
 
     def draw_movement(self, movement):
-        empty_space_pos = self.search_empty_space()
+        empty_space_pos = self.combination.index(0) # Search for the empty space
         animation_time = 2.0    # Time in seconds of the animation
-        img_moving_piece = None
         moving_piece_pos = None
 
         # We suppose the movement is valid
@@ -83,30 +65,55 @@ class Puzzle:
             case "LEFT":
                 moving_number = self.combination[empty_space_pos-1]
                 moving_piece_pos = empty_space_pos-1
+            case "NOTHING":
+                moving_number = self.combination[empty_space_pos]
+                moving_piece_pos = empty_space_pos
 
 
         img_moving_piece = pygame.image.load(images_table[moving_number])
 
-        initial_pos_x = moving_piece_pos % self.dimension[0] * 45 + 5
-        initial_pos_y = moving_piece_pos // self.dimension[1] * 45 + 5
+        initial_pos_x = (moving_piece_pos % self.dimension[0]) * 45 + 5
+        initial_pos_y = (moving_piece_pos // self.dimension[1]) * 45 + 5
 
+        final_pos_x = (empty_space_pos % self.dimension[0]) * 45 + 5
+        final_pos_y = (empty_space_pos // self.dimension[1]) * 45 + 5
 
+        start_time = time.time()
+        clock = pygame.time.Clock()
 
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
 
+            t = (time.time() - start_time) / animation_time
+            if t >= 1:
+                break
 
-    3,7,2,5,4,0,6,8,1
+            # Lineal interpolation: pos = start + (end - start) * t
+            x = initial_pos_x + (final_pos_x - initial_pos_x) * t
+            y = initial_pos_y + (final_pos_y - initial_pos_y) * t
 
-    3,7,2
-    5,4,0
-    6,8,1
+            # Draw puzzle except for the moving peace
+            self.window.fill((0, 0, 0))
+            for i, tile in enumerate(self.combination):
+                if tile != 0 and tile != moving_number:
+                    px = (i % self.dimension[0] * 45) + 5
+                    py = (i // self.dimension[1] * 45) + 5
+                    self.window.blit(pygame.image.load(images_table[tile]), (px, py))
 
+            # Draw moving peace
+            self.window.blit(img_moving_piece, (x, y))
 
+            pygame.display.flip()
+            clock.tick(60)  # 60 FPS
 
-    def search_empty_space(self) -> int :
-        """
-        :return: Position of empty space in puzzle array
-        """
-        return self.combination.index(0)
+        # Logical move of the peace
+        combination_list = list(self.combination)
+        combination_list[empty_space_pos] = moving_number
+        combination_list[moving_piece_pos] = 0
+        self.combination = tuple(combination_list)
 
 
 

@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.13 (8PiecePuzzle)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (8PiecePuzzle)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (8-Puzzle-Game)" project-jdk-type="Python SDK" />
 </project>
