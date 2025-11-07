@@ -116,7 +116,7 @@ class Puzzle:
         self.combination = tuple(combination_list)
 
 
-    i = 0 + 1
+    i = 0 + 2
 
 
 
