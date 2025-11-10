@@ -31,7 +31,7 @@ class Puzzle:
         self.combination = combination
         self.solution = solution_combination
 
-        moves = ["DOWN", "LEFT", "UP", "LEFT", "UP", "RIGHT", "DOWN", "DOWN"]
+        moves = ["UP"]
         move_index = 0
 
         while True:
@@ -43,6 +43,7 @@ class Puzzle:
             if move_index < len(moves):
                 self.draw_movement(moves[move_index])
                 move_index += 1
+                print(self.combination)
 
 
     def draw_movement(self, movement):
@@ -66,9 +67,8 @@ class Puzzle:
                 moving_number = self.combination[empty_space_pos-1]
                 moving_piece_pos = empty_space_pos-1
             case "NOTHING":
-                moving_number = self.combination[empty_space_pos]
-                moving_piece_pos = empty_space_pos
-
+                self.draw_board()
+                return
 
         img_moving_piece = pygame.image.load(images_table[moving_number])
 
@@ -115,23 +115,11 @@ class Puzzle:
         combination_list[moving_piece_pos] = 0
         self.combination = tuple(combination_list)
 
-
-    i = 0 + 2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def draw_board(self):
+        self.window.fill((0, 0, 0))
+        for i, tile in enumerate(self.combination):
+            if tile != 0 :
+                px = (i % self.dimension[0] * 45) + 5
+                py = (i // self.dimension[1] * 45) + 5
+                self.window.blit(pygame.image.load(images_table[tile]), (px, py))
+        pygame.display.flip()
