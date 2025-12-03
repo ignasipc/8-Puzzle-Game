@@ -1,6 +1,7 @@
 import pygame
 import sys
 import time
+from State import State
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -31,7 +32,7 @@ class Puzzle:
         self.combination = combination
         self.solution = solution_combination
 
-        moves = ["UP"]
+        moves = self.obtain_solution()
         move_index = 0
 
         while True:
@@ -123,3 +124,47 @@ class Puzzle:
                 py = (i // self.dimension[1] * 45) + 5
                 self.window.blit(pygame.image.load(images_table[tile]), (px, py))
         pygame.display.flip()
+
+
+    def obtain_solution(self):
+        # Create initial state
+        initial_state = State(self.dimension, self.combination, self.solution)
+
+        # Define data structure
+        open = []
+        closed = set()
+
+        # Initialize BF Algorythm
+        open.append(initial_state)
+        current_state = None
+        while open:
+            current_state = open.pop(0)
+
+            if current_state in closed:
+                continue
+
+            if current_state.is_goal():
+                break
+
+            for children in current_state.generate_children():
+                open.append(children)
+
+            closed.add(current_state)
+
+        if current_state.is_goal():
+            return current_state.moves
+        return "NOTHING"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
