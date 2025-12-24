@@ -151,7 +151,6 @@ class Puzzle:
             for child in current_state.generate_children():
                 g_cost = len(child.moves)
 
-                # Solo exploramos si no lo hemos visto o si encontramos un camino más corto
                 if child.combination not in closed or g_cost < closed[child.combination]:
                     closed[child.combination] = g_cost
                     f_cost = g_cost + child.manhattan_distance()
