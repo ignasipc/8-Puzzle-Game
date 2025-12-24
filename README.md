@@ -14,3 +14,8 @@ At the start I tried to solve it with BF-Search, as it would give the solution w
 After implementing the A* algorythm, I started getting solutions! As it's an informed search algorythm, it 'ignores' the irrelevant or worse states. It's a very optimal algorythm!
 
 ## Finally solving the puzzle
+- ### Unsolved
+![8 Puzzle game unsolved](8_puzzle_unsolved.jpeg)
+
+- ### Solved
+![8 Puzzle game solved](8_puzzle_solved.jpeg)
