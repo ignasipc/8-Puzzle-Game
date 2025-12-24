@@ -22,12 +22,17 @@ class State:
 
         self.moves = []
 
+
     def __hash__(self):
         return hash(tuple(self.combination))
 
 
     def __eq__(self, other):
         return self.combination == other.combination
+
+
+    def __lt__(self, other):
+        return False
 
 
     def legal_move(self, displacement) -> bool:
@@ -88,6 +93,15 @@ class State:
         return generated_states
 
 
+    def manhattan_distance(self):
+        distance = 0
+        for i in range(len(self.combination)):
+            value = self.combination[i]
+            if value != 0:
+                current_row, current_col = divmod(i, 3)
+                target_index = self.solution.index(value)
+                target_row, target_col = divmod(target_index, 3)
 
-
+                distance += abs(current_row - target_row) + abs(current_col - target_col)
+        return distance
 

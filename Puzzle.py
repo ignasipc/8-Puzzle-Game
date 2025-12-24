@@ -2,6 +2,7 @@ import pygame
 import sys
 import time
 from State import State
+import heapq
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -129,28 +130,32 @@ class Puzzle:
 
     def obtain_solution(self):
         # Create initial state
-        initial_state = State(self.dimension, self.combination, self.solution)
+        initial_combination = tuple(self.combination)
+        self.solution = tuple(self.solution)
+
+        initial_state = State(self.dimension, initial_combination, self.solution)
 
         # Define data structure
         open = []
-        closed = set()
+        heapq.heappush(open, (initial_state.manhattan_distance(), initial_state))
 
-        # Initialize BF Algorythm
-        open.append(initial_state)
+        closed = {initial_combination: 0}
 
+        # Initialize A* Algorythm
         while open:
-            current_state = open.pop(0)
-
-            if current_state in closed:
-                continue
+            _, current_state = heapq.heappop(open)
 
             if current_state.is_goal():
                 return current_state.moves
 
-            for children in current_state.generate_children():
-                open.append(children)
+            for child in current_state.generate_children():
+                g_cost = len(child.moves)
 
-            closed.add(current_state)
+                # Solo exploramos si no lo hemos visto o si encontramos un camino más corto
+                if child.combination not in closed or g_cost < closed[child.combination]:
+                    closed[child.combination] = g_cost
+                    f_cost = g_cost + child.manhattan_distance()
+                    heapq.heappush(open, (f_cost, child))
 
         return "N"
 
