@@ -42,12 +42,12 @@ class Puzzle:
                     sys.exit()
 
             if move_index < len(moves):
+                print(f"Current move: {moves[move_index]}")
                 self.draw_movement(moves[move_index])
                 move_index += 1
-                print(self.combination)
 
 
-    def draw_movement(self, movement):
+    def draw_movement(self, movement : str):
         empty_space_pos = self.combination.index(0) # Search for the empty space
         animation_time = 2.0    # Time in seconds of the animation
         moving_piece_pos = None
@@ -67,8 +67,9 @@ class Puzzle:
             case "LEFT":
                 moving_number = self.combination[empty_space_pos-1]
                 moving_piece_pos = empty_space_pos-1
-            case "NOTHING":
+            case "N":
                 self.draw_board()
+                print("There is no solution :(")
                 return
 
         img_moving_piece = pygame.image.load(images_table[moving_number])
@@ -136,7 +137,7 @@ class Puzzle:
 
         # Initialize BF Algorythm
         open.append(initial_state)
-        current_state = None
+
         while open:
             current_state = open.pop(0)
 
@@ -144,16 +145,14 @@ class Puzzle:
                 continue
 
             if current_state.is_goal():
-                break
+                return current_state.moves
 
             for children in current_state.generate_children():
                 open.append(children)
 
             closed.add(current_state)
 
-        if current_state.is_goal():
-            return current_state.moves
-        return "NOTHING"
+        return "N"
 
 
 

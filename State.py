@@ -1,6 +1,3 @@
-import copy
-
-
 class State:
     # All possible movements of the blank peace (number '0')
     movements = {
@@ -39,9 +36,15 @@ class State:
         :param displacement: Displacement of the blank peace or 0
         :return: True if the displacement falls between position 0 and the combination's lenth
         """
-        if 0 <= self.combination.index(0) + displacement < len(self.combination):
-            return True
-        return False
+        zero_index = self.combination.index(0)
+
+        if not (0 <= zero_index + displacement < len(self.combination)):
+            return False
+        if displacement == -1 and zero_index % 3 == 0:
+            return False
+        if displacement == 1 and zero_index % 3 == 2:
+            return False
+        return True
 
 
     def is_goal(self):
@@ -53,19 +56,21 @@ class State:
         if not self.legal_move(displacement):
             return None
 
-        new_state = copy.deepcopy(self)
-
         # Get the empty piece position and the piece's number that will be moved
-        empty_space_pos = new_state.combination.index(0)
-        moving_number = new_state.combination[empty_space_pos+displacement]
+        empty_space_pos = self.combination.index(0)
+        target_pos = empty_space_pos + displacement
+        moving_number = self.combination[target_pos]
 
         # Logical move of the peace
-        combination_list = list(new_state.combination)
-        combination_list[empty_space_pos] = moving_number
-        combination_list[empty_space_pos+displacement] = 0
+        new_combination = list(self.combination)
+        new_combination[empty_space_pos] = moving_number
+        new_combination[target_pos] = 0
 
-        # Change new state's combination and add the movement taken
-        new_state.combination = combination_list
+        # Create the new state
+        new_state = State(self.dimension, tuple(new_combination), self.solution)
+
+        # Copy the movement's list to the new state
+        new_state.moves = list(self.moves)
         new_state.moves.append(self.movements[displacement])
 
         return new_state
